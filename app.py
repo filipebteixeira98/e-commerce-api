@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask_login import LoginManager, UserMixin, login_user
+from flask_login import LoginManager, UserMixin, login_required, login_user
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -33,6 +33,11 @@ class Product(db.Model):
     description = db.Column(db.Text, nullable=True)
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -48,6 +53,7 @@ def login():
 
 
 @app.route('/api/products/add', methods=["POST"])
+@login_required
 def add_product():
     data = request.json
 
@@ -65,6 +71,7 @@ def add_product():
 
 
 @app.route('/api/products/delete/<int:product_id>', methods=["DELETE"])
+@login_required
 def delete_product(product_id):
     product = Product.query.get(product_id)
 
@@ -94,6 +101,7 @@ def get_product_details(product_id):
 
 
 @app.route('/api/products/update/<int:product_id>', methods=['PUT'])
+@login_required
 def update_product(product_id):
     product = Product.query.get(product_id)
 
