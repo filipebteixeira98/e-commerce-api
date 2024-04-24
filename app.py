@@ -84,6 +84,24 @@ def update_product(product_id):
     return jsonify({'message': 'Product updated successfully!'})
 
 
+@app.route('/api/products', methods=['GET'])
+def get_products():
+    products = Product.query.all()
+
+    products_list = []
+
+    for product in products:
+        product_data = {
+            'id': product.id,
+            'name': product.name,
+            'price': product.price,
+        }
+
+        products_list.append(product_data)
+
+    return jsonify(products_list)
+
+
 @app.route('/')
 def main_endpoint():
     return 'E-commerce API'
