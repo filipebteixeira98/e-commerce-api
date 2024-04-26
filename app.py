@@ -179,7 +179,7 @@ def add_to_cart(product_id):
 
         db.session.commit()
 
-        return jsonify({'message': 'Item added to the cart successfully!'})
+        return jsonify({'message': 'Item added to the cart successfully!'}), 201
 
     return jsonify({'message': 'Failed to add item to the cart!'}), 400
 
@@ -221,6 +221,21 @@ def view_cart():
         })
 
     return jsonify(cart_items_list)
+
+
+@app.route('/api/cart/checkout', methods=['POST'])
+@login_required
+def checkout():
+    user = User.query.get(int(current_user.id))
+
+    cart_items = user.cart
+
+    for cart_item in cart_items:
+        db.session.delete(cart_item)
+
+    db.session.commit()
+
+    return jsonify({'message': 'Checkout successful. Cart has been cleared!'})
 
 
 if __name__ == '__main__':
